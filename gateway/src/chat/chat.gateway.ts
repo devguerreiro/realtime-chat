@@ -33,9 +33,13 @@ export class ChatGateway {
   async handleJoinRoom(client: Socket, roomId: string) {
     for (const room of client.rooms) {
       await client.leave(room);
+
+      console.debug(`left from room ${room}`);
     }
 
     await client.join(roomId);
+
+    console.debug(`joined the room ${roomId}`);
 
     this.server.to(roomId).emit('join', 'Someone has entered the room.');
   }
@@ -43,5 +47,9 @@ export class ChatGateway {
   @SubscribeMessage('room:leave')
   async handleLeaveRoom(client: Socket, roomId: string) {
     await client.leave(roomId);
+
+    console.debug(`left the room ${roomId}`);
+
+    this.server.to(roomId).emit('left', 'Someone has left the room.');
   }
 }
