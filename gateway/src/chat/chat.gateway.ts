@@ -5,7 +5,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 import type { Message } from './chat.models';
 
@@ -27,5 +27,15 @@ export class ChatGateway {
 
       console.debug('message broadcasted');
     }
+  }
+
+  @SubscribeMessage('room:join')
+  async handleJoinRoom(client: Socket, roomId: string) {
+    await client.join(roomId);
+  }
+
+  @SubscribeMessage('room:leave')
+  async handleLeaveRoom(client: Socket, roomId: string) {
+    await client.leave(roomId);
   }
 }
