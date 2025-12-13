@@ -1,6 +1,13 @@
-import { WebSocketGateway } from '@nestjs/websockets';
+import {
+  MessageBody,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 
-import { Socket } from 'socket.io';
+import { Server } from 'socket.io';
+
+import type { Message } from './chat.models';
 
 @WebSocketGateway({
   cors: {
@@ -8,7 +15,17 @@ import { Socket } from 'socket.io';
   },
 })
 export class ChatGateway {
-  handleConnection(client: Socket) {
-    client.emit('connected', 'New connection received');
+  @WebSocketServer()
+  server: Server;
+
+  @SubscribeMessage('message:new')
+  handleNewMessage(@MessageBody() message: Message) {
+    console.debug('message received');
+
+    if (message.content && message.content.length <= 500) {
+      this.server.emit('message:new', message);
+
+      console.debug('message broadcasted');
+    }
   }
 }
