@@ -1,5 +1,4 @@
 import {
-  MessageBody,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -19,10 +18,14 @@ export class ChatGateway {
   server: Server;
 
   @SubscribeMessage('message:new')
-  handleNewMessage(@MessageBody() message: Message) {
+  handleNewMessage(client: Socket, message: Message) {
     console.debug('message received');
 
-    if (message.content && message.content.length <= 500) {
+    if (
+      client.rooms.has(message.roomId) &&
+      message.content &&
+      message.content.length <= 500
+    ) {
       this.server.to(message.roomId).emit('message:new', message);
 
       console.debug(`message sent to room ${message.roomId}`);
@@ -32,16 +35,18 @@ export class ChatGateway {
   @SubscribeMessage('room:join')
   async handleJoinRoom(client: Socket, roomId: string) {
     for (const room of client.rooms) {
-      await client.leave(room);
+      if (room !== client.id) {
+        await client.leave(room);
 
-      console.debug(`left from room ${room}`);
+        console.debug(`left from room ${room}`);
+      }
     }
 
     await client.join(roomId);
 
     console.debug(`joined the room ${roomId}`);
 
-    this.server.to(roomId).emit('join', 'Someone has entered the room.');
+    this.server.to(roomId).emit('joined', `${client.id} has entered the room.`);
   }
 
   @SubscribeMessage('room:leave')
@@ -50,6 +55,6 @@ export class ChatGateway {
 
     console.debug(`left the room ${roomId}`);
 
-    this.server.to(roomId).emit('left', 'Someone has left the room.');
+    this.server.to(roomId).emit('left', `${client.id}  has left the room.`);
   }
 }
