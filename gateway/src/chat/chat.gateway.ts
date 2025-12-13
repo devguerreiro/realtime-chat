@@ -31,7 +31,13 @@ export class ChatGateway {
 
   @SubscribeMessage('room:join')
   async handleJoinRoom(client: Socket, roomId: string) {
+    for (const room of client.rooms) {
+      await client.leave(room);
+    }
+
     await client.join(roomId);
+
+    this.server.to(roomId).emit('join', 'Someone has entered the room.');
   }
 
   @SubscribeMessage('room:leave')
