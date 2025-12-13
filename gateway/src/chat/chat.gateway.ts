@@ -23,9 +23,9 @@ export class ChatGateway {
     console.debug('message received');
 
     if (message.content && message.content.length <= 500) {
-      this.server.emit('message:new', message);
+      this.server.to(message.roomId).emit('message:new', message);
 
-      console.debug('message broadcasted');
+      console.debug(`message sent to room ${message.roomId}`);
     }
   }
 
