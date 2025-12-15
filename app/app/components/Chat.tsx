@@ -33,25 +33,11 @@ export default function Chat({ roomId }: Props) {
     }
 
     function onJoined(message: string) {
-      setMessages((messages) => [
-        ...messages,
-        {
-          roomId,
-          content: message,
-          timestamp: new Date().getTime(),
-        },
-      ]);
+      alert(message);
     }
 
     function onLeft(message: string) {
-      setMessages((messages) => [
-        ...messages,
-        {
-          roomId,
-          content: message,
-          timestamp: new Date().getTime(),
-        },
-      ]);
+      alert(message);
     }
 
     socket.on("message:new", onNewMessage);
@@ -85,14 +71,7 @@ export default function Chat({ roomId }: Props) {
   function handleOnLeave() {
     socket.emit("room:leave", roomId);
 
-    setMessages((messages) => [
-      ...messages,
-      {
-        roomId,
-        content: "You left the room.",
-        timestamp: new Date().getTime(),
-      },
-    ]);
+    alert("You left the room.");
 
     setHasLeft(true);
   }
