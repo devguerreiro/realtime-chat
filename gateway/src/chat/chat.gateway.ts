@@ -6,7 +6,7 @@ import {
 
 import { Server, Socket } from 'socket.io';
 
-import type { Message } from './chat.models';
+import type { MessageIn } from './chat.models';
 
 @WebSocketGateway({
   cors: {
@@ -18,43 +18,56 @@ export class ChatGateway {
   server: Server;
 
   @SubscribeMessage('message:new')
-  handleNewMessage(client: Socket, message: Message) {
-    console.debug('message received');
+  handleNewMessage(client: Socket, message: MessageIn) {
+    const userId = client.handshake.auth.userId as string;
+
+    if (!userId) return;
 
     if (
       client.rooms.has(message.roomId) &&
       message.content &&
       message.content.length <= 500
     ) {
-      this.server.to(message.roomId).emit('message:new', message);
+      this.server.to(message.roomId).emit('message:new', {
+        ...message,
+        userId: client.handshake.auth.userId as string,
+      });
 
-      console.debug(`message sent to room ${message.roomId}`);
+      console.debug(`${userId} sent a new message to room ${message.roomId}`);
     }
   }
 
   @SubscribeMessage('room:join')
   async handleJoinRoom(client: Socket, roomId: string) {
+    const userId = client.handshake.auth.userId as string;
+
+    if (!userId) return;
+
     for (const room of client.rooms) {
       if (room !== client.id) {
         await client.leave(room);
 
-        console.debug(`left from room ${room}`);
+        console.debug(`${userId} left the room ${roomId}`);
       }
     }
 
     await client.join(roomId);
 
-    console.debug(`joined the room ${roomId}`);
+    console.debug(`${userId} joined the room ${roomId}`);
 
-    this.server.to(roomId).emit('joined', `${client.id} has entered the room.`);
+    this.server.to(roomId).emit('joined', `${userId} has entered the room.`);
   }
 
   @SubscribeMessage('room:leave')
   async handleLeaveRoom(client: Socket, roomId: string) {
+    const userId = client.handshake.auth.userId as string;
+
+    if (!userId) return;
+
     await client.leave(roomId);
 
-    console.debug(`left the room ${roomId}`);
+    console.debug(`${userId} left the room ${roomId}`);
 
-    this.server.to(roomId).emit('left', `${client.id}  has left the room.`);
+    this.server.to(roomId).emit('left', `${userId} has left the room.`);
   }
 }
