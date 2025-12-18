@@ -1,17 +1,23 @@
-import {
-  IsNotEmpty,
-  IsNumber,
-  IsPositive,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
+
+import { PaginatedQuery } from 'src/base.dto';
+
+import { Message } from './message/message.entity';
+
+export class GetMessagesQuery extends PaginatedQuery {
+  @IsString()
+  @IsNotEmpty()
+  roomName: string;
+}
 
 export class NewMessageDTO {
-  @IsUUID()
-  roomId: string;
+  @IsString()
+  @IsNotEmpty()
+  roomName: string;
 
-  @IsUUID()
-  userId: string;
+  @IsString()
+  @IsNotEmpty()
+  username: string;
 
   @IsString()
   @IsNotEmpty()
@@ -22,8 +28,16 @@ export class NewMessageDTO {
   timestamp: number;
 }
 
-export class MessageDTO {
+export class ListMessageDTO {
   content: string;
   timestamp: number;
-  userId: string;
+  username: string;
+
+  fromEntity(message: Message) {
+    this.content = message.content;
+    this.timestamp = message.timestamp;
+    this.username = message.user.username;
+
+    return this;
+  }
 }
