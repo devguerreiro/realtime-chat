@@ -1,8 +1,10 @@
+import { Inject } from '@nestjs/common';
 import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { ClientProxy } from '@nestjs/microservices';
 
 import { Server, Socket } from 'socket.io';
 
@@ -17,57 +19,73 @@ export class ChatGateway {
   @WebSocketServer()
   server: Server;
 
-  @SubscribeMessage('message:new')
-  handleNewMessage(client: Socket, message: MessageIn) {
-    const userId = client.handshake.auth.userId as string;
+  constructor(@Inject('RedisService') private redisClient: ClientProxy) {}
 
-    if (!userId) return;
+  @SubscribeMessage('chat:room:new-message')
+  newMessage(client: Socket, message: MessageIn) {
+    const username = client.handshake.auth.username as string;
+
+    if (!username) return;
 
     if (
-      client.rooms.has(message.roomId) &&
+      client.rooms.has(message.roomName) &&
       message.content &&
       message.content.length <= 500
     ) {
-      this.server.to(message.roomId).emit('message:new', {
+      this.server.to(message.roomName).emit('chat:room:new-message', {
         ...message,
-        userId: client.handshake.auth.userId as string,
+        username: client.handshake.auth.username as string,
       });
 
-      console.debug(`${userId} sent a new message to room ${message.roomId}`);
+      this.redisClient.emit('chat:room:new-message', {
+        ...message,
+        username,
+      });
+
+      console.debug(
+        `${username} sent a new message to room ${message.roomName}`,
+      );
     }
   }
 
-  @SubscribeMessage('room:join')
-  async handleJoinRoom(client: Socket, roomId: string) {
-    const userId = client.handshake.auth.userId as string;
+  @SubscribeMessage('chat:room:join')
+  async joinRoom(client: Socket, roomName: string) {
+    const username = client.handshake.auth.username as string;
 
-    if (!userId) return;
+    if (!username) return;
 
     for (const room of client.rooms) {
       if (room !== client.id) {
         await client.leave(room);
 
-        console.debug(`${userId} left the room ${roomId}`);
+        console.debug(`${username} left the room ${room}`);
       }
     }
 
-    await client.join(roomId);
+    await client.join(roomName);
 
-    console.debug(`${userId} joined the room ${roomId}`);
+    console.debug(`${username} joined the room ${roomName}`);
 
-    this.server.to(roomId).emit('joined', `${userId} has entered the room.`);
+    this.server
+      .to(roomName)
+      .emit(
+        'chat:room:joined',
+        `${username} has entered the room ${roomName}.`,
+      );
   }
 
-  @SubscribeMessage('room:leave')
-  async handleLeaveRoom(client: Socket, roomId: string) {
-    const userId = client.handshake.auth.userId as string;
+  @SubscribeMessage('chat:room:leave')
+  async leaveRoom(client: Socket, roomName: string) {
+    const username = client.handshake.auth.username as string;
 
-    if (!userId) return;
+    if (!username) return;
 
-    await client.leave(roomId);
+    await client.leave(roomName);
 
-    console.debug(`${userId} left the room ${roomId}`);
+    console.debug(`${username} left the room ${roomName}`);
 
-    this.server.to(roomId).emit('left', `${userId} has left the room.`);
+    this.server
+      .to(roomName)
+      .emit('chat:room:left', `${username} has left the room ${roomName}.`);
   }
 }

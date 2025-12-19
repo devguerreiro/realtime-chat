@@ -1,12 +1,11 @@
 export interface MessageIn {
-  roomId: string;
+  roomName: string;
   content: string;
   timestamp: number;
 }
 
 export interface MessageOut {
-  roomId: string;
   content: string;
   timestamp: number;
-  userId: string;
+  username: string;
 }
