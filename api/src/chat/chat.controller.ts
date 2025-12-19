@@ -24,7 +24,7 @@ export class ChatController {
   ) {}
 
   @EventPattern('chat:room:new-message')
-  async newMessage(@Body() message: NewMessageDTO) {
+  async onNewMessage(@Body() message: NewMessageDTO) {
     const room = await this.roomService.getRoomByName(message.roomName);
 
     if (room === null) {
