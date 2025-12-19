@@ -1,3 +1,3 @@
 {
-  "conventionalCommits.scopes": ["api", "gateway"]
+  "conventionalCommits.scopes": ["api", "gateway", "app"]
 }
