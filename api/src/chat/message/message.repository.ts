@@ -29,6 +29,9 @@ export class MessageRepository {
           name: roomName,
         },
       },
+      relations: {
+        user: true,
+      },
       take: limit ?? 20,
       skip: offset ?? 0,
     });

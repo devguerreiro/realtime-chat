@@ -4,9 +4,9 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  Post,
   Query,
 } from '@nestjs/common';
+import { EventPattern } from '@nestjs/microservices';
 
 import { GetMessagesQuery, ListMessageDTO, NewMessageDTO } from './chat.dto';
 
@@ -23,7 +23,7 @@ export class ChatController {
     private userService: UserService,
   ) {}
 
-  @Post('message')
+  @EventPattern('chat:room:new-message')
   async newMessage(@Body() message: NewMessageDTO) {
     const room = await this.roomService.getRoomByName(message.roomName);
 
@@ -36,6 +36,10 @@ export class ChatController {
     if (user === null) {
       throw new HttpException('user does not exist', HttpStatus.BAD_REQUEST);
     }
+
+    console.debug(
+      `a new message from ${message.username} was saved in the database`,
+    );
 
     return this.messageService.create(
       message.content,
@@ -57,8 +61,11 @@ export class ChatController {
       offset,
     );
 
-    const mapper = new ListMessageDTO();
+    console.debug(`got ${messages.length} messages`);
 
-    return messages.map((message) => mapper.fromEntity(message));
+    return messages.map((message) => {
+      const mapper = new ListMessageDTO();
+      return mapper.fromEntity(message);
+    });
   }
 }
