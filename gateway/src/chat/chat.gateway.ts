@@ -32,7 +32,7 @@ export class ChatGateway {
       message.content &&
       message.content.length <= 500
     ) {
-      this.server.to(message.roomName).emit('chat:room:new-message', {
+      this.server.to(message.roomName).emit('chat:room:new-message:broadcast', {
         ...message,
         username: client.handshake.auth.username as string,
       });

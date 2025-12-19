@@ -41,12 +41,12 @@ export default function Chat({ roomName, historyMessages }: Props) {
       console.log(message);
     }
 
-    socket.on("chat:room:new-message", onNewMessage);
+    socket.on("chat:room:new-message:broadcast", onNewMessage);
     socket.on("chat:room:joined", onJoined);
     socket.on("chat:room:left", onLeft);
 
     return () => {
-      socket.off("chat:room:new-message", onNewMessage);
+      socket.off("chat:room:new-message:broadcast", onNewMessage);
       socket.off("chat:room:joined", onJoined);
       socket.off("chat:room:left", onLeft);
 
