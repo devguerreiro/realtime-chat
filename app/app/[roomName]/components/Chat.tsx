@@ -12,24 +12,59 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-import { joinRoom, leaveRoom, sendMessage, socket } from "../socket";
-import { Message } from "../types";
+import {
+  joinRoom,
+  leaveRoom,
+  offJoinedRoom,
+  offLeftRoom,
+  offMessageBroadcast,
+  onJoinedRoom,
+  onLeftRoom,
+  onMessageBroadcast,
+  sendMessage,
+} from "@/services/web-socket.service";
+
+import { RoomMessage } from "@/models/chat.model";
 
 import ChatMessage from "./ChatMessage";
 
 type Props = {
   roomName: string;
-  historyMessages: Message[];
+  roomMessages: RoomMessage[];
 };
 
-export default function Chat({ roomName, historyMessages }: Props) {
+export default function Chat({ roomName, roomMessages }: Props) {
   const [hasLeft, setHasLeft] = useState<boolean>(false);
-  const [messages, setMessages] = useState<Message[]>(historyMessages);
+  const [messages, setMessages] = useState<RoomMessage[]>(roomMessages);
+
+  function onLeave() {
+    leaveRoom(roomName);
+
+    console.log("You left the room.");
+
+    setHasLeft(true);
+  }
+
+  function onInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      const input = event.target as HTMLInputElement;
+
+      const message = input.value;
+      if (message.trim()) {
+        sendMessage({
+          roomName,
+          content: message,
+        });
+      }
+
+      input.value = "";
+    }
+  }
 
   useEffect(() => {
     joinRoom(roomName);
 
-    function onNewMessage(message: Message) {
+    function onNewMessage(message: RoomMessage) {
       setMessages((messages) => [...messages, message]);
     }
 
@@ -41,43 +76,18 @@ export default function Chat({ roomName, historyMessages }: Props) {
       console.log(message);
     }
 
-    socket.on("chat:room:new-message:broadcast", onNewMessage);
-    socket.on("chat:room:joined", onJoined);
-    socket.on("chat:room:left", onLeft);
+    onMessageBroadcast(onNewMessage);
+    onJoinedRoom(onJoined);
+    onLeftRoom(onLeft);
 
     return () => {
-      socket.off("chat:room:new-message:broadcast", onNewMessage);
-      socket.off("chat:room:joined", onJoined);
-      socket.off("chat:room:left", onLeft);
+      offMessageBroadcast(onNewMessage);
+      offJoinedRoom(onJoined);
+      offLeftRoom(onLeft);
 
       leaveRoom(roomName);
     };
   }, [roomName]);
-
-  function onLeave() {
-    leaveRoom(roomName);
-
-    console.log("You left the room.");
-
-    setHasLeft(true);
-  }
-
-  function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Enter") {
-      const input = event.target as HTMLInputElement;
-
-      const message = input.value;
-      if (message.trim()) {
-        sendMessage({
-          roomName,
-          content: message,
-          timestamp: new Date().getTime(),
-        });
-      }
-
-      input.value = "";
-    }
-  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -91,7 +101,7 @@ export default function Chat({ roomName, historyMessages }: Props) {
           ))}
         </CardContent>
         <CardFooter>
-          <Input autoFocus onKeyDown={onKeyDown} disabled={hasLeft} />
+          <Input autoFocus onKeyDown={onInputKeyDown} disabled={hasLeft} />
         </CardFooter>
       </Card>
       {!hasLeft && (

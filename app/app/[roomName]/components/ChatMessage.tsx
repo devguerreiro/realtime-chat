@@ -1,7 +1,7 @@
-import { Message } from "../types";
+import { RoomMessage } from "@/models/chat.model";
 
 type Props = {
-  message: Message;
+  message: RoomMessage;
 };
 
 export default function ChatMessage({ message }: Props) {

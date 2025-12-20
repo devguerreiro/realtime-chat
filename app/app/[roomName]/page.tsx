@@ -1,6 +1,6 @@
-import Chat from "../components/Chat";
+import { getRoomMessages } from "@/services/chat.service";
 
-import { Message } from "../types";
+import Chat from "./components/Chat";
 
 type Props = {
   params: Promise<{ roomName: string }>;
@@ -9,15 +9,11 @@ type Props = {
 export default async function Page({ params }: Props) {
   const { roomName } = await params;
 
-  const response = await fetch(
-    `http://localhost:8080/chat/messages?roomName=${roomName}`
-  );
-
-  const messages = (await response.json()) as Message[];
+  const messages = await getRoomMessages(roomName);
 
   return (
     <div className="w-screen h-screen flex justify-center items-center">
-      <Chat roomName={roomName} historyMessages={messages} />
+      <Chat roomName={roomName} roomMessages={messages} />
     </div>
   );
 }

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function Page() {
@@ -12,8 +11,14 @@ export default function Page() {
 
   const router = useRouter();
 
-  function handleOnJoin() {
-    router.push(roomName);
+  function onInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      router.push(roomName);
+    }
+  }
+
+  function onInputChange(event: ChangeEvent<HTMLInputElement>) {
+    setRoomName(event.target.value);
   }
 
   return (
@@ -21,13 +26,9 @@ export default function Page() {
       <div className="max-w-xs flex flex-col gap-3">
         <Input
           placeholder="room's name"
-          onChange={(event) => {
-            setRoomName(event.target.value);
-          }}
+          onChange={onInputChange}
+          onKeyDown={onInputKeyDown}
         />
-        <Button type="button" onClick={handleOnJoin}>
-          Join
-        </Button>
       </div>
     </div>
   );
