@@ -8,7 +8,7 @@ import { Room } from './room.entity';
 
 @Injectable()
 export class RoomRepository {
-  private repository: Repository<Room>;
+  private readonly repository: Repository<Room>;
 
   constructor() {
     this.repository = AppDataSource.getRepository(Room);

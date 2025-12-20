@@ -8,14 +8,14 @@ import { Message } from './message.entity';
 
 @Injectable()
 export class MessageRepository {
-  private repository: Repository<Message>;
+  private readonly repository: Repository<Message>;
 
   constructor() {
     this.repository = AppDataSource.getRepository(Message);
   }
 
-  async create(message: Omit<Message, 'id'>): Promise<void> {
-    await this.repository.save(message);
+  async create(message: Omit<Message, 'id'>): Promise<Message> {
+    return await this.repository.save(message);
   }
 
   getByRoomName(

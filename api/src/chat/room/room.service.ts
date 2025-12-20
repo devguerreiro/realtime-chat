@@ -6,7 +6,7 @@ import { Room } from './room.entity';
 
 @Injectable()
 export class RoomService {
-  constructor(private roomRepository: RoomRepository) {}
+  constructor(private readonly roomRepository: RoomRepository) {}
 
   getRoomByName(name: string): Promise<Room | null> {
     return this.roomRepository.getRoomByName(name);
