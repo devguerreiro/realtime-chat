@@ -1,17 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { MessageCreatedEvent } from 'src/publisher/publisher.event';
-import type { EventPublisher } from 'src/publisher/event-publisher.interface';
-
-import { EVENT_PUBLISHER } from 'src/publisher/event-publisher.token';
 
 import { NewMessageDTO } from './chat.dto';
+import { PublisherService } from 'src/publisher/publisher.service';
 
 @Injectable()
 export class ChatService {
-  constructor(
-    @Inject(EVENT_PUBLISHER) private readonly publisher: EventPublisher,
-  ) {}
+  constructor(private readonly publisher: PublisherService) {}
 
   validateNewMessage(message: NewMessageDTO) {
     const { content } = message;
