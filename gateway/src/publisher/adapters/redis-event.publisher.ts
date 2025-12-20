@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 
-import { MessageCreatedEvent } from '../events/message-created.event';
+import { MessageCreatedEvent } from '../publisher.event';
 import { EventPublisher } from '../event-publisher.interface';
 
 @Injectable()

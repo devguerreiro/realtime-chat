@@ -8,7 +8,7 @@ import {
 import { Socket } from 'socket.io';
 
 import { ChatService } from './chat.service';
-import { NewMessageDTO } from './dto/new-message.dto';
+import { NewMessageDTO } from './chat.dto';
 
 @WebSocketGateway({
   cors: {
@@ -26,7 +26,6 @@ export class ChatGateway {
     timestamp: number,
   ) {
     socket.to(roomName).emit('chat:room:new-message:broadcast', {
-      roomName,
       username,
       content,
       timestamp,

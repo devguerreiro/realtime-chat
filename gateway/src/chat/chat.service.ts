@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { MessageCreatedEvent } from 'src/publisher/events/message-created.event';
+import { MessageCreatedEvent } from 'src/publisher/publisher.event';
 import type { EventPublisher } from 'src/publisher/event-publisher.interface';
 
 import { EVENT_PUBLISHER } from 'src/publisher/event-publisher.token';
 
-import { NewMessageDTO } from './dto/new-message.dto';
+import { NewMessageDTO } from './chat.dto';
 
 @Injectable()
 export class ChatService {

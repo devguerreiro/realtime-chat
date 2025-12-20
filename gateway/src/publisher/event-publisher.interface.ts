@@ -1,4 +1,4 @@
-import { MessageCreatedEvent } from './events/message-created.event';
+import { MessageCreatedEvent } from './publisher.event';
 
 export interface EventPublisher {
   publishMessageCreated(event: MessageCreatedEvent): void;
