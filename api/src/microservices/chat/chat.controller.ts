@@ -39,10 +39,6 @@ export class MSChatController {
       user,
     );
 
-    console.debug(
-      `a new message from ${message.username} was saved in the database`,
-    );
-
     await this.cacheService.appendMessage(
       message.roomName,
       new ListMessageDTO().fromEntity(createdMessage),

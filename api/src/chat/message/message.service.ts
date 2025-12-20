@@ -23,12 +23,18 @@ export class MessageService {
     room: Room,
     user: User,
   ): Promise<Message> {
-    return this.messageRepository.create({
+    const created = await this.messageRepository.create({
       content,
       timestamp,
       room,
       user,
     });
+
+    console.debug(
+      `a new message from ${user.username} was saved in the database`,
+    );
+
+    return created;
   }
 
   async getByRoomName(
