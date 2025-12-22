@@ -15,9 +15,11 @@ import { Button } from "@/components/ui/button";
 import {
   joinRoom,
   leaveRoom,
+  offConnect,
   offJoinedRoom,
   offLeftRoom,
   offMessageBroadcast,
+  onConnect,
   onJoinedRoom,
   onLeftRoom,
   onMessageBroadcast,
@@ -76,14 +78,20 @@ export default function Chat({ roomName, roomMessages }: Props) {
       console.log(message);
     }
 
+    function onConnected() {
+      joinRoom(roomName);
+    }
+
     onMessageBroadcast(onNewMessage);
     onJoinedRoom(onJoined);
     onLeftRoom(onLeft);
+    onConnect(onConnected);
 
     return () => {
       offMessageBroadcast(onNewMessage);
       offJoinedRoom(onJoined);
       offLeftRoom(onLeft);
+      offConnect(onConnected);
 
       leaveRoom(roomName);
     };

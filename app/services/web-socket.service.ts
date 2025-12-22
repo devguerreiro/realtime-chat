@@ -35,6 +35,10 @@ export function onLeftRoom(callback: (message: string) => void) {
   socket.on("chat:room:left", callback);
 }
 
+export function onConnect(callback: () => void) {
+  socket.on("connect", callback);
+}
+
 export function offMessageBroadcast(callback: (message: RoomMessage) => void) {
   socket.off("chat:room:new-message:broadcast", callback);
 }
@@ -45,4 +49,8 @@ export function offJoinedRoom(callback: (message: string) => void) {
 
 export function offLeftRoom(callback: (message: string) => void) {
   socket.off("chat:room:left", callback);
+}
+
+export function offConnect(callback: () => void) {
+  socket.off("connect", callback);
 }
