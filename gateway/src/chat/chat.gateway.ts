@@ -3,6 +3,7 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  OnGatewayConnection,
 } from '@nestjs/websockets';
 
 import { Socket } from 'socket.io';
@@ -15,8 +16,20 @@ import { NewMessageDTO } from './chat.dto';
     origin: '*',
   },
 })
-export class ChatGateway {
+export class ChatGateway implements OnGatewayConnection {
   constructor(private readonly chatService: ChatService) {}
+
+  handleConnection(socket: Socket) {
+    const username = socket.handshake.auth.username as string;
+
+    if (!username) {
+      console.error('authentication failed');
+
+      socket.disconnect();
+    }
+
+    socket.data.username = username;
+  }
 
   private broadcastMessage(
     socket: Socket,
@@ -38,11 +51,6 @@ export class ChatGateway {
     @MessageBody() message: NewMessageDTO,
   ) {
     const username = socket.handshake.auth.username as string;
-
-    if (!username) {
-      console.error('there is no username');
-      return;
-    }
 
     const { roomName, content } = message;
 
@@ -77,8 +85,6 @@ export class ChatGateway {
   ) {
     const username = socket.handshake.auth.username as string;
 
-    if (!username) return;
-
     for (const room of socket.rooms) {
       await socket.leave(room);
     }
@@ -101,8 +107,6 @@ export class ChatGateway {
     @MessageBody() roomName: string,
   ) {
     const username = socket.handshake.auth.username as string;
-
-    if (!username) return;
 
     await socket.leave(roomName);
 

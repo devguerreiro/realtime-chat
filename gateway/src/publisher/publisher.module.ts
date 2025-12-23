@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule, ClientsModuleOptions } from '@nestjs/microservices';
-
-import { REDIS_MICROSERVICE_OPTIONS } from 'src/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 import { PUBLISHER } from './publisher.token';
 import { PublisherService } from './publisher.service';
@@ -11,7 +9,11 @@ import { PublisherService } from './publisher.service';
     ClientsModule.register([
       {
         name: PUBLISHER,
-        ...(REDIS_MICROSERVICE_OPTIONS as ClientsModuleOptions),
+        transport: Transport.REDIS,
+        options: {
+          host: 'localhost',
+          port: 6379,
+        },
       },
     ]),
   ],
