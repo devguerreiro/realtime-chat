@@ -8,8 +8,6 @@ import { MessageRepository } from './message.repository';
 
 import { CacheService } from 'src/cache/cache.service';
 
-import { ListMessageDTO } from '../chat.dto';
-
 @Injectable()
 export class MessageService {
   constructor(
@@ -41,7 +39,7 @@ export class MessageService {
     roomName: string,
     limit?: number,
     offset?: number,
-  ): Promise<ListMessageDTO[]> {
+  ): Promise<Message[]> {
     const cached = await this.cacheService.getCachedMessages(roomName);
 
     if (cached) return cached;
@@ -54,13 +52,6 @@ export class MessageService {
 
     console.debug(`got ${messages.length} messages`);
 
-    const mappedMessages = messages.map((message) => {
-      const mapper = new ListMessageDTO();
-      return mapper.fromEntity(message);
-    });
-
-    await this.cacheService.cacheMessages(roomName, mappedMessages);
-
-    return mappedMessages;
+    return await this.cacheService.cacheMessages(roomName, messages);
   }
 }

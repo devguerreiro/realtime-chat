@@ -1,15 +1,5 @@
 import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
 
-import { PaginatedQuery } from 'src/base.dto';
-
-import { Message } from './message/message.entity';
-
-export class GetMessagesQuery extends PaginatedQuery {
-  @IsString()
-  @IsNotEmpty()
-  roomName: string;
-}
-
 export class NewMessageDTO {
   @IsString()
   @IsNotEmpty()
@@ -28,16 +18,22 @@ export class NewMessageDTO {
   timestamp: number;
 }
 
+export class NewRoomDTO {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+}
+
 export class ListMessageDTO {
+  username: string;
   content: string;
   timestamp: number;
-  username: string;
+}
 
-  fromEntity(message: Message) {
-    this.content = message.content;
-    this.timestamp = message.timestamp;
-    this.username = message.user.username;
+export class ListRoomDTO {
+  name: string;
+}
 
-    return this;
-  }
+export class RoomDTO {
+  name: string;
 }

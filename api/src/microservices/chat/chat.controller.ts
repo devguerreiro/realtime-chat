@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { Body, HttpException, HttpStatus } from '@nestjs/common';
 import { EventPattern } from '@nestjs/microservices';
 
-import { ListMessageDTO, NewMessageDTO } from '../../chat/chat.dto';
+import { NewMessageDTO } from 'src/chat/chat.dto';
 
 import { MessageService } from 'src/chat/message/message.service';
 import { RoomService } from 'src/chat/room/room.service';
@@ -39,9 +39,6 @@ export class MSChatController {
       user,
     );
 
-    await this.cacheService.appendMessage(
-      message.roomName,
-      new ListMessageDTO().fromEntity(createdMessage),
-    );
+    await this.cacheService.appendMessage(message.roomName, createdMessage);
   }
 }

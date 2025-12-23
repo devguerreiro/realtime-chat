@@ -2,7 +2,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Cache } from 'cache-manager';
 
-import { ListMessageDTO } from 'src/chat/chat.dto';
+import { Message } from 'src/chat/message/message.entity';
 
 @Injectable()
 export class CacheService {
@@ -12,10 +12,8 @@ export class CacheService {
     return `messages:${roomName}`;
   }
 
-  async getCachedMessages(
-    roomName: string,
-  ): Promise<ListMessageDTO[] | undefined> {
-    const cached = await this.cacheManager.get<ListMessageDTO[]>(
+  async getCachedMessages(roomName: string): Promise<Message[] | undefined> {
+    const cached = await this.cacheManager.get<Message[]>(
       this.getKey(roomName),
     );
 
@@ -28,8 +26,8 @@ export class CacheService {
 
   async cacheMessages(
     roomName: string,
-    messages: ListMessageDTO[],
-  ): Promise<ListMessageDTO[]> {
+    messages: Message[],
+  ): Promise<Message[]> {
     const cached = await this.cacheManager.set(this.getKey(roomName), messages);
 
     console.debug('messages have been cached');
@@ -37,10 +35,7 @@ export class CacheService {
     return cached;
   }
 
-  async appendMessage(
-    roomName: string,
-    message: ListMessageDTO,
-  ): Promise<void> {
+  async appendMessage(roomName: string, message: Message): Promise<void> {
     const cached = await this.getCachedMessages(roomName);
 
     if (cached) {

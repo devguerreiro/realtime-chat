@@ -17,4 +17,16 @@ export class RoomRepository {
   getRoomByName(name: string): Promise<Room | null> {
     return this.repository.findOneBy({ name });
   }
+
+  getAll(): Promise<Room[]> {
+    return this.repository.find();
+  }
+
+  createRoom(name: string) {
+    const room = new Room();
+
+    room.name = name;
+
+    return this.repository.save(room);
+  }
 }
