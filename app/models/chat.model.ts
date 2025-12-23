@@ -3,3 +3,7 @@ export interface RoomMessage {
   timestamp: number;
   username: string;
 }
+
+export interface Room {
+  name: string;
+}

@@ -1,35 +1,47 @@
-"use client";
+import { MessageSquareOffIcon } from "lucide-react";
 
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
-import { useRouter } from "next/navigation";
+import { getRooms } from "@/services/chat.service";
 
-import { Input } from "@/components/ui/input";
+import RoomCard from "./components/RoomCard";
+import AddRoomDialog from "./components/AddRoomDialog";
 
-export default function Page() {
-  const [roomName, setRoomName] = useState("");
-
-  const router = useRouter();
-
-  function onInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Enter") {
-      router.push(roomName);
-    }
-  }
-
-  function onInputChange(event: ChangeEvent<HTMLInputElement>) {
-    setRoomName(event.target.value);
-  }
+export default async function Page() {
+  const rooms = await getRooms();
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center">
-      <div className="max-w-xs flex flex-col gap-3">
-        <Input
-          placeholder="room's name"
-          onChange={onInputChange}
-          onKeyDown={onInputKeyDown}
-        />
+    <div className="container mx-auto pt-10 space-y-8">
+      <div className="flex justify-end">
+        <AddRoomDialog />
       </div>
+      {rooms.length > 0 ? (
+        <div className="grid grid-cols-12 *:col-span-4 gap-3">
+          {rooms.map((room) => (
+            <RoomCard key={room.name} room={room} />
+          ))}
+        </div>
+      ) : (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <MessageSquareOffIcon />
+            </EmptyMedia>
+            <EmptyTitle>No rooms</EmptyTitle>
+            <EmptyDescription>No rooms found</EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <AddRoomDialog />
+          </EmptyContent>
+        </Empty>
+      )}
     </div>
   );
 }

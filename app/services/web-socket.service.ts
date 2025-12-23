@@ -9,7 +9,21 @@ export const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
   auth: {
     username: "devguerreiro",
   },
+  autoConnect: false,
 });
+
+export function connect(roomName: string) {
+  socket.on("connect", () => {
+    joinRoom(roomName);
+  });
+
+  socket.connect();
+}
+
+export function disconnect() {
+  socket.removeAllListeners();
+  socket.disconnect();
+}
 
 export function sendMessage(message: NewMessageDTO) {
   socket.emit("chat:room:new-message", message);
@@ -33,24 +47,4 @@ export function onJoinedRoom(callback: (message: string) => void) {
 
 export function onLeftRoom(callback: (message: string) => void) {
   socket.on("chat:room:left", callback);
-}
-
-export function onConnect(callback: () => void) {
-  socket.on("connect", callback);
-}
-
-export function offMessageBroadcast(callback: (message: RoomMessage) => void) {
-  socket.off("chat:room:new-message:broadcast", callback);
-}
-
-export function offJoinedRoom(callback: (message: string) => void) {
-  socket.off("chat:room:joined", callback);
-}
-
-export function offLeftRoom(callback: (message: string) => void) {
-  socket.off("chat:room:left", callback);
-}
-
-export function offConnect(callback: () => void) {
-  socket.off("connect", callback);
 }

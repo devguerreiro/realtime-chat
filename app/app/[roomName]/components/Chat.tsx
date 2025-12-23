@@ -13,13 +13,9 @@ import {
 import { Button } from "@/components/ui/button";
 
 import {
-  joinRoom,
+  connect,
+  disconnect,
   leaveRoom,
-  offConnect,
-  offJoinedRoom,
-  offLeftRoom,
-  offMessageBroadcast,
-  onConnect,
   onJoinedRoom,
   onLeftRoom,
   onMessageBroadcast,
@@ -64,7 +60,7 @@ export default function Chat({ roomName, roomMessages }: Props) {
   }
 
   useEffect(() => {
-    joinRoom(roomName);
+    connect(roomName);
 
     function onNewMessage(message: RoomMessage) {
       setMessages((messages) => [...messages, message]);
@@ -78,24 +74,14 @@ export default function Chat({ roomName, roomMessages }: Props) {
       console.log(message);
     }
 
-    function onConnected() {
-      joinRoom(roomName);
-    }
-
     onMessageBroadcast(onNewMessage);
     onJoinedRoom(onJoined);
     onLeftRoom(onLeft);
-    onConnect(onConnected);
 
     return () => {
-      offMessageBroadcast(onNewMessage);
-      offJoinedRoom(onJoined);
-      offLeftRoom(onLeft);
-      offConnect(onConnected);
-
-      leaveRoom(roomName);
+      disconnect();
     };
-  }, [roomName]);
+  }, []);
 
   return (
     <div className="flex flex-col gap-6">
