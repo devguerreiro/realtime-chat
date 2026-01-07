@@ -8,7 +8,7 @@ import {
 
 import type { Relation } from 'typeorm';
 
-import { Message } from '../message/message.entity';
+import { Message } from '@/domains/message/message.entity';
 
 @Entity()
 export class Room {

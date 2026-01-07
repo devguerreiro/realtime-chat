@@ -2,8 +2,7 @@ import { Module } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import KeyvRedis from '@keyv/redis';
 
-import { ChatModule } from './chat/chat.module';
-import { MSChatModule } from './microservices/chat/chat.module';
+import { ChatModule } from './domains/chat/chat.module';
 
 @Module({
   imports: [
@@ -16,7 +15,6 @@ import { MSChatModule } from './microservices/chat/chat.module';
       isGlobal: true,
     }),
     ChatModule,
-    MSChatModule,
   ],
 })
 export class AppModule {}

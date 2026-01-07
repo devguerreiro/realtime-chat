@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
-import { User } from 'src/user/user.entity';
-import { Room } from '../room/room.entity';
+import { CacheService } from '@/domains/cache/cache.service';
+
+import { User } from '@/domains/user/user.entity';
+import { Room } from '@/domains/room/room.entity';
 import { Message } from './message.entity';
 
 import { MessageRepository } from './message.repository';
-
-import { CacheService } from 'src/cache/cache.service';
 
 @Injectable()
 export class MessageService {

@@ -1,8 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { MicroserviceOptions } from '@nestjs/microservices';
-
-import { REDIS_MICROSERVICE_OPTIONS } from './config';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 import { AppModule } from './app.module';
 import { AppDataSource } from './data-source';
@@ -10,7 +8,13 @@ import { AppDataSource } from './data-source';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.connectMicroservice<MicroserviceOptions>(REDIS_MICROSERVICE_OPTIONS);
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.REDIS,
+    options: {
+      host: 'localhost',
+      port: 6379,
+    },
+  });
 
   app.useGlobalPipes(new ValidationPipe());
 

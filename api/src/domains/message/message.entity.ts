@@ -2,9 +2,8 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import type { Relation } from 'typeorm';
 
-import { User } from 'src/user/user.entity';
-
-import { Room } from '../room/room.entity';
+import { User } from '@/domains/user/user.entity';
+import { Room } from '@/domains/room/room.entity';
 
 @Entity()
 export class Message {

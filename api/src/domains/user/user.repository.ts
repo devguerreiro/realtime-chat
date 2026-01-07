@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { Repository } from 'typeorm';
 
-import { AppDataSource } from 'src/data-source';
+import { AppDataSource } from '@/data-source';
 
 import { User } from './user.entity';
 

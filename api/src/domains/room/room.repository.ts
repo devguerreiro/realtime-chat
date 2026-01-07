@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { Repository } from 'typeorm';
 
-import { AppDataSource } from 'src/data-source';
+import { AppDataSource } from '@/data-source';
 
 import { Room } from './room.entity';
 
@@ -14,7 +14,7 @@ export class RoomRepository {
     this.repository = AppDataSource.getRepository(Room);
   }
 
-  getRoomByName(name: string): Promise<Room | null> {
+  getByName(name: string): Promise<Room | null> {
     return this.repository.findOneBy({ name });
   }
 
@@ -22,7 +22,7 @@ export class RoomRepository {
     return this.repository.find();
   }
 
-  createRoom(name: string) {
+  create(name: string) {
     const room = new Room();
 
     room.name = name;
