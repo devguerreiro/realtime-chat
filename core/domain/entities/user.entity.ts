@@ -1,11 +1,5 @@
-export class UserEntity {
-  constructor(readonly id: number, readonly username: string) {
-    this.validate();
-  }
+import type { Username } from "../value-objects/username";
 
-  validate() {
-    if (this.id < 0) throw new Error("id must be positive");
-    if (this.username.length === 0)
-      throw new Error("username must not be empty");
-  }
+export class UserEntity {
+  constructor(readonly username: Username) {}
 }

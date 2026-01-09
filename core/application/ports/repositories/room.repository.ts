@@ -1,7 +1,9 @@
-import { RoomEntity } from "../entities/room.entity";
+import type { RoomName } from "@/domain/value-objects/room-name";
+
+import { RoomEntity } from "@/domain/entities/room.entity";
 
 export interface RoomRepository {
-  findByName(name: string): Promise<RoomEntity>;
+  findByName(name: RoomName): Promise<RoomEntity>;
   findAll(): Promise<RoomEntity[]>;
-  create(name: string): Promise<RoomEntity>;
+  create(name: RoomName): Promise<RoomEntity>;
 }
